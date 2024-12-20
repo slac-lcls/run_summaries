@@ -9,13 +9,21 @@ import argparse
 import logging
 import requests
 import numpy as np
+import re
 from requests.auth import HTTPBasicAuth
 import holoviews as hv
+from holoviews import opts
 from holoviews import dim
 
 hv.extension("bokeh")
+hv.extension('matplotlib')
 pn.extension()
 import sys
+
+import scipy
+from scipy.optimize import curve_fit
+from scipy import ndimage
+
 
 try:
     basestring
@@ -154,18 +162,40 @@ ana = anaps.sda  #
 
 ## Defining initial selection (laser-on events)
 iniFilter = "initial"
+
 ana.addCut("lightStatus/xray", 0.5, 1.5, iniFilter)
 ana.addCut("lightStatus/laser", 0.5, 1.5, iniFilter)
 
+
+### Search for IPMs in the h5 file
+print("Searching for IPMS")
+collected_names = []
+def print_name(name, obj):
+    pattern = re.compile(r'ipm\d/sum')  # Regex pattern to match 'ipm' followed by any number of digits and then '/sum'
+    if pattern.search(name):
+        collected_names.append(name)
+filename = "/sdf/data/lcls/ds/{}/{}/hdf5/smalldata/{}_Run{:04d}.h5".format(expname[:3], expname, expname, run)
+print("filename",filename)
+with h5py.File(filename, 'r')  as h5f: # file will be closed when we exit from WITH scope
+    h5f.visititems(print_name) # print all structure names
+
+print("Found IPM names",collected_names)
+
+
+ipm_a = collected_names[0] #define the first ipm
+ipm_b = collected_names[1] #define the second ipm
+
+    
 ### Get data & define axis title&ranges.
 
-ipmUpDim = hv.Dimension(("ipm4/sum", "ipm4 Sum"))
-ipmDownDim = hv.Dimension(("ipm5/sum", "ipm5 Sum"))
+ipmUpDim = hv.Dimension(("{}".format(ipm_a), "{} Sum".format(ipm_a[:4])))
+ipmDownDim = hv.Dimension(("{}".format(ipm_b), "{} Sum".format(ipm_b[:4])))
 scatterDim = hv.Dimension(("epix10k2M/ROI_0_sum", "epix10k2M intensity"))
 eventTimeDim = hv.Dimension(("eventTimeR", "relative event time"))
 l3eDim = hv.Dimension(("l3e", "L3 Energy"))
 
 scanVar = ana.getScanName()
+
 try:
     scanDim = hv.Dimension(("scan/%s" % scanVar, "%s" % scanVar))
 except:
@@ -212,6 +242,8 @@ try:
         scatterVar = np.nanmean(scatterVar, axis=1)
 except:
     scatterVar = None
+
+
 
 ### Scan Variable
 
@@ -318,8 +350,9 @@ if lxtPlot is not None:
     gspecS[maxRow, 0:8] = pn.Row("## Laser - xray Timing")
     gspecS[maxRow + 1 : maxRow + 3, 0:8] = pn.Column(lxtPlot)
 
-# Detector stuff.
 
+
+#detector stuff
 detImgs = []
 detGrids = []
 for detImgName in ana.Keys("Sums"):
@@ -331,10 +364,6 @@ for detImgName in ana.Keys("Sums"):
                 .replace("_calib", "")
                 .replace("_dropped", "")
                 .replace("_square", "")
-                .replace("_max", "")
-                .replace("_thresADU1", "")
-                .replace("_thresADU5", "")
-                .replace("_skipFirst", "")
             )
             ix = ana.fh5.get_node("/UserDataCfg/%s/ix" % detName).read()
             iy = ana.fh5.get_node("/UserDataCfg/%s/iy" % detName).read()
@@ -368,6 +397,7 @@ for detImgName in ana.Keys("Sums"):
     detGrid[0, 0] = pn.Row(detImgs[-1])
     detGrids.append(detGrid)
 
+    
 if nOff > 100:
     for detImgName in ana.Keys("Sums"):
         detName = (
@@ -425,6 +455,11 @@ if nOff > 100:
 
 tabs = pn.Tabs(gspec)
 tabs.append(gspecS)
+try:
+    tabs.append(gspecSi)
+except:
+    print("no epix2 silica plots")
+
 for detGrid in detGrids:
     tabs.append(detGrid)
 
