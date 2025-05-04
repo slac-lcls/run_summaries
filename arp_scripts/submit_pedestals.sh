@@ -74,7 +74,7 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 RUN="${RUN_NUM:=$RUN}" # default to the environment variable if submitted from the elog
 EXP="${EXPERIMENT:=$EXP}" # default to the environment variable if submitted from the elog
 HUTCH=${EXP:0:3}
-LCLS2_HUTCHES="rix, tmo, ued"
+LCLS2_HUTCHES="rix, tmo, ued, mfx"
 if echo $LCLS2_HUTCHES | grep -iw $HUTCH > /dev/null; then
     echo "This is a LCLS-II experiment"
     source $SIT_ENV_DIR/sw/conda2/manage/bin/psconda.sh
