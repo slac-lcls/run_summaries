@@ -364,7 +364,7 @@ def plotPedestals(
 ):
     ds = psana.DataSource(exp=expname, run=run)
     thisrun = next(ds.runs())
-    det_names = [dn for dn,di in thisrun.detinfo if dn.find("epix") >= 0 and di=='raw']
+    det_names = [dn for dn,di in thisrun.detinfo if (dn.find("epix") >= 0 or dn.find("jungfrau") >= 0) and di=='raw']
     aliases = det_names #same for LCLS2
     runnum = run
     run = thisrun
@@ -372,7 +372,7 @@ def plotPedestals(
     tabs = None
     runTableData = {}
     for det_name, alias in zip(det_names, aliases):
-        # print(det_name, alias)
+        #print(det_name, alias)
         this_det_name = alias
         if alias == "":
             this_det_name = det_name
