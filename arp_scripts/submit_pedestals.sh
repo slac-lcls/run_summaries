@@ -91,5 +91,5 @@ echo calling $ABS_PATH/$PLOT_PY.py $@
 if [[ -v INTERACTIVE ]]; then
     $ABS_PATH/$PLOT_PY.py $@
 else
-    sbatch -p $QUEUE --account $ACCOUNT $ABS_PATH/$PLOT_PY.py $@
+    sbatch -p $QUEUE --mem 8GB --account $ACCOUNT $ABS_PATH/$PLOT_PY.py $@
 fi
