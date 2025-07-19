@@ -141,7 +141,7 @@ if args.events != "":
             detinfo = alldetinfo[detname]
         else:
             detinfo = get_detinfo(fh5, detname)
-            alldetinfo[detname]=detinfo
+            alldetinfo[detname] = detinfo
 
         alldata = [d for d in dir(getattr(fh5, f"{detname}")) if d[0]!='_']
         for d in alldata:
