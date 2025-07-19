@@ -93,7 +93,8 @@ if args.directory: dirname = args.directory
 fname = "%s/%s_Run%04d.h5" % (dirname, expname, run)
 
 if os.path.isfile(fname):
-    fh5 = tables.open_file(fname).root
+    file_handle = tables.open_file(fname)
+    fh5 = file_handle.root
 else:
     logger.error(f"File {fname} does not exist, exiting.")
     sys.exit()
@@ -164,4 +165,4 @@ if args.events != "":
                     tiff_file = f"{tiffdirname}/Run_{int(run)}_evt_{evt+1}_{detname}.tiff"
                     im.save(tiff_file)
 
-fh5.close()
+file_handle.close()
