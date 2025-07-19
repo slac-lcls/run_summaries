@@ -89,7 +89,8 @@ hutch = expname[:3]
 dirname = (
     f"{S3DF_BASE}/{hutch}/{expname}/hdf5/smalldata"
 )
-if args.directory: dirname = args.directory
+if args.directory:
+    dirname = args.directory
 fname = "%s/%s_Run%04d.h5" % (dirname, expname, run)
 
 if os.path.isfile(fname):
