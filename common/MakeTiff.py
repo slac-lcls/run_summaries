@@ -134,7 +134,7 @@ if args.sum or args.sumavg:
 
             
 if args.events != "":
-    print('Looking at specified detectors only: ',args.events)
+    logger.info(f'Looking at specified detectors only: {args.events}')
     detnames = args.events.split(',')
 
     for detname in detnames:
