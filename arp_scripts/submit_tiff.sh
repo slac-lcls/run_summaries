@@ -4,7 +4,7 @@ usage()
 {
 cat << EOF
 $(basename "$0"): 
-	Script to launch a smalldata_tools run analysis
+	Script to launch a TIFF conversion process using MakeTiff.py
 	
 	OPTIONS:
 		-h|--help
