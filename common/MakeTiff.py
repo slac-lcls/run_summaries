@@ -31,11 +31,13 @@ def get_detinfo(fh5, detname):
         )
     else:
         piximg = np.ones_like(mask)
-    ret_dict={'ix':ix,
-              'iy':iy,
-              'imgShape':imgShape,
-              'piximg':piximg,
-              'needsGeo':needsGeo}
+    ret_dict = {
+        'ix': ix,
+        'iy': iy,
+        'imgShape': imgShape,
+        'piximg': piximg,
+        'needsGeo': needsGeo
+    }
     return ret_dict
 
 # logging.basicConfig(level=logging.DEBUG)
