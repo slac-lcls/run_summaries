@@ -3,8 +3,8 @@
 usage()
 {
 cat << EOF
-$(basename "$0"): 
-	Script to launch a TIFF conversion process using MakeTiff.py
+$(basename "$0"): Script to launch a TIFF conversion process using MakeTiff.py.
+	This script facilitates the conversion of image data to TIFF format and supports SLURM job submission for batch processing.
 	
 	OPTIONS:
 		-h|--help
