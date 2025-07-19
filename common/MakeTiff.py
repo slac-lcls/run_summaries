@@ -17,9 +17,9 @@ def get_detinfo(fh5, detname):
 
     mask = getattr(getattr(fh5.UserDataCfg, detname), 'mask').read()
     needsGeo = False
-    print(detname)
-    print(imgShape)
-    print(mask.shape)
+    logger.debug(detname)
+    logger.debug(imgShape)
+    logger.debug(mask.shape)
     if len(np.array(mask.shape))>2:
         needsGeo = True
     elif (np.array(mask.shape)-np.array(imgShape)).sum()!=0:
