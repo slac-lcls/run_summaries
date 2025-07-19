@@ -101,7 +101,7 @@ tiffdirname = S3DF_BASE / f"{expname[:3]}/{expname}/scratch/run{int(run)}"
 if not os.path.isdir(tiffdirname):
     os.makedirs(tiffdirname)
 
-alldetinfo={}
+alldetinfo = {}
     
 if args.sum or args.sumavg:
     nEvts = fh5.event_time.shape[0]
