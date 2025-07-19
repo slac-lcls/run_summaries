@@ -115,7 +115,7 @@ if args.sum or args.sumavg:
             detinfo = alldetinfo[detname]
         else:
             detinfo = get_detinfo(fh5, detname)
-            alldetinfo[detname]=detinfo
+            alldetinfo[detname] = detinfo
         if detinfo['needsGeo']:
             img = np.asarray(
                 sparse.coo_matrix(
