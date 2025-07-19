@@ -75,7 +75,7 @@ parser.add_argument(
     default=None,
 )
 args = parser.parse_args()
-logger.debug("Args to be used for pedestal plots: {0}".format(args))
+logger.debug("Args to be used for creating TIFF files: {0}".format(args))
 
 expname = args.experiment
 run = int(args.run)
