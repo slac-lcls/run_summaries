@@ -75,7 +75,7 @@ HUTCH=${EXP:0:3}
 
 source $SIT_ENV_DIR/sw/conda1/manage/bin/psconda.sh
 #conda activate ana-4.0.16-py3
-ABS_PATH=`echo $MYDIR | sed  s/arp_scripts/summaries/g`
+ABS_PATH=`echo $MYDIR | sed  s/arp_scripts/common/g`
 EXE_PY=MakeTiff
 
 echo calling $ABS_PATH/$EXE_PY.py $@
