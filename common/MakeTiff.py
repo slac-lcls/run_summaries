@@ -6,6 +6,7 @@ import logging
 from scipy import sparse
 from pathlib import Path
 from PIL import Image
+import sys
 
 def get_detinfo(fh5, detname):
     imgShape = getattr(getattr(fh5.UserDataCfg, detname), 'imgShape').read()
@@ -31,9 +32,10 @@ def get_detinfo(fh5, detname):
     else:
         piximg = np.ones_like(mask)
     ret_dict={'ix':ix,
-             'iy':iy,
-             'imgShape':imgShape,
-             'piximg':piximg}
+              'iy':iy,
+              'imgShape':imgShape,
+              'piximg':piximg,
+              'needsGeo':needsGeo}
     return ret_dict
 
 # logging.basicConfig(level=logging.DEBUG)
@@ -112,11 +114,7 @@ if args.sum or args.sumavg:
         else:
             detinfo = get_detinfo(fh5, detname)
             alldetinfo[detname]=detinfo
-        if len(np.array(data.shape))>2:
-            needsGeo = True
-        elif (np.array(data.shape)-np.array(detinfo['imgShape'])).sum()!=0:
-            needsGeo = True
-        if needsGeo:
+        if detinfo['needsGeo']:
             img = np.asarray(
                 sparse.coo_matrix(
                     (data.flatten(),
@@ -162,4 +160,4 @@ if args.events != "":
                     tiff_file = f"{tiffdirname}/Run_{int(run)}_evt_{evt+1}_{detname}.tiff"
                     im.save(tiff_file)
 
-    #fh5.close()
+fh5.close()
