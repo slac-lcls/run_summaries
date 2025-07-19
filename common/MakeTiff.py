@@ -94,7 +94,7 @@ import tables
 if os.path.isfile(fname):
     fh5 = tables.open_file(fname).root
 else:
-    print(fname, ' does not exist, exit')
+    logger.error(f"File {fname} does not exist, exiting.")
     sys.exit()
 
 tiffdirname = S3DF_BASE / f"{expname[:3]}/{expname}/scratch/run{int(run)}"
