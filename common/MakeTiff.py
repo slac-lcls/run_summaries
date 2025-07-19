@@ -7,6 +7,7 @@ from scipy import sparse
 from pathlib import Path
 from PIL import Image
 import sys
+import tables
 
 def get_detinfo(fh5, detname):
     imgShape = getattr(getattr(fh5.UserDataCfg, detname), 'imgShape').read()
@@ -90,7 +91,7 @@ dirname = (
 )
 if args.directory: dirname = args.directory
 fname = "%s/%s_Run%04d.h5" % (dirname, expname, run)
-import tables
+
 if os.path.isfile(fname):
     fh5 = tables.open_file(fname).root
 else:
@@ -143,12 +144,13 @@ if args.events != "":
             detinfo = get_detinfo(fh5, detname)
             alldetinfo[detname] = detinfo
 
-        alldata = [d for d in dir(getattr(fh5, f"{detname}")) if d[0]!='_']
+        det_data = getattr(fh5, f"{detname}")
+        alldata = [d for d in dir(det_data) if d[0]!='_']
         for d in alldata:
-            shp = getattr(getattr(fh5, f"{detname}"),d).shape
+            shp = getattr(det_data,d).shape
             if len(shp)>2:
                 for evt in range(shp[0]):
-                    data = getattr(getattr(fh5, f"{detname}"),d).read(evt,evt+1).squeeze()
+                    data = getattr(det_data,d).read(evt,evt+1).squeeze()
                     if ((detinfo['imgShape']-data.shape).sum())!=0:
                         img = np.asarray(
                             sparse.coo_matrix(
