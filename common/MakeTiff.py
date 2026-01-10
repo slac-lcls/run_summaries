@@ -10,35 +10,39 @@ import sys
 import tables
 
 def get_detinfo(fh5, detname):
-    imgShape = getattr(getattr(fh5.UserDataCfg, detname), 'imgShape').read()
-    ix = getattr(getattr(fh5.UserDataCfg, detname), 'ix').read()
-    iy = getattr(getattr(fh5.UserDataCfg, detname), 'iy').read()
-    pixel_array = np.ones_like(ix)
-
-    mask = getattr(getattr(fh5.UserDataCfg, detname), 'mask').read()
     needsGeo = False
-    logger.debug(detname)
-    logger.debug(imgShape)
-    logger.debug(mask.shape)
-    if len(np.array(mask.shape))>2:
-        needsGeo = True
-    elif (np.array(mask.shape)-np.array(imgShape)).sum()!=0:
-        needsGeo = True
-    if needsGeo:
-        piximg = np.asarray(
-            sparse.coo_matrix(
-                (pixel_array.flatten(), (ix.flatten(), iy.flatten())), shape=imgShape
-            ).todense()
-        )
-    else:
-        piximg = np.ones_like(mask)
     ret_dict = {
-        'ix': ix,
-        'iy': iy,
-        'imgShape': imgShape,
-        'piximg': piximg,
         'needsGeo': needsGeo
     }
+    try:
+        imgShape = getattr(getattr(fh5.UserDataCfg, detname), 'imgShape').read()
+        ix = getattr(getattr(fh5.UserDataCfg, detname), 'ix').read()
+        iy = getattr(getattr(fh5.UserDataCfg, detname), 'iy').read()
+        pixel_array = np.ones_like(ix)
+
+        mask = getattr(getattr(fh5.UserDataCfg, detname), 'mask').read()
+        logger.debug(detname)
+        logger.debug(imgShape)
+        logger.debug(mask.shape)
+        if len(np.array(mask.shape))>2:
+            needsGeo = True
+        elif (np.array(mask.shape)-np.array(imgShape)).sum()!=0:
+            needsGeo = True
+        if needsGeo:
+            piximg = np.asarray(
+                sparse.coo_matrix(
+                    (pixel_array.flatten(), (ix.flatten(), iy.flatten())), shape=imgShape
+                ).todense()
+            )
+        else:
+            piximg = np.ones_like(mask)
+        ret_dict['ix'] = ix
+        ret_dict['iy'] = iy
+        ret_dict['imgShape'] = imgShape
+        ret_dict['piximg'] = piximg
+        ret_dict['needsGeo'] = needsGeo
+    except:
+        pass
     return ret_dict
 
 # logging.basicConfig(level=logging.DEBUG)
@@ -67,6 +71,12 @@ parser.add_argument(
     help="save average images as tiff",
     action="store_true",
     default=False,
+)
+parser.add_argument(
+    "--maxevents",
+    help="save tiff files for up to max events",
+    type=int,
+    default=-1
 )
 parser.add_argument(
     "--events",
@@ -146,14 +156,18 @@ if args.events != "":
             detinfo = get_detinfo(fh5, detname)
             alldetinfo[detname] = detinfo
 
-        det_data = getattr(fh5, f"{detname}")
+        det_data = getattr(fh5, f"{detname}", None)
+        if det_data is None: print(f'Could not find data for {detname} in hdf5 file')
         alldata = [d for d in dir(det_data) if d[0]!='_']
         for d in alldata:
             shp = getattr(det_data,d).shape
+            maxevents = shp[0]
+            if args.maxevents > 0: maxevents = min(maxevents, args.maxevents)
             if len(shp)>2:
-                for evt in range(shp[0]):
+                print('Making tiff files for ',detname,' original shape: ',shp)
+                for evt in range(maxevents):
                     data = getattr(det_data,d).read(evt,evt+1).squeeze()
-                    if ((detinfo['imgShape']-data.shape).sum())!=0:
+                    if len(data.shape)>2:                        
                         img = np.asarray(
                             sparse.coo_matrix(
                                 (data.flatten(),
