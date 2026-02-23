@@ -136,7 +136,8 @@ if args.sum or args.sumavg:
                      (detinfo['ix'].flatten(), detinfo['iy'].flatten())),
                     shape=detinfo['imgShape']
                 ).todense())
-            data = img/detinfo['piximg']
+            #do not divide here - the sum is more physically appropriate
+            #data = img/detinfo['piximg']
         data = data/nEvts
 
         im = Image.fromarray(data)
@@ -174,7 +175,8 @@ if args.events != "":
                                  (detinfo['ix'].flatten(), detinfo['iy'].flatten())),
                                 shape=detinfo['imgShape']
                             ).todense())
-                        data = img/detinfo['piximg']
+                        #do not divide here - the sum is more physically appropriate
+                        #data = img/detinfo['piximg']
                         
                     im = Image.fromarray(data)
                     tiff_file = f"{tiffdirname}/Run_{int(run)}_evt_{evt+1}_{detname}.tiff"
