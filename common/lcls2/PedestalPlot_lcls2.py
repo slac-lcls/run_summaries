@@ -283,10 +283,10 @@ def allPlots(
         sizing_mode="stretch_width", max_width=500, name="Histogram - %s" % det_name
     )
     gspecH[0, 0:8] = pn.Row("# Pedestals&RMS Histograms - Run %04d" % (runnum))
-    gspecH[1:4, 0:8] = pn.Column(hv.Overlay(pedHists))
-    gspecH[4:7, 0:8] = pn.Column(hv.Overlay(noiseHists))
+    gspecH[1:4, 0:8] = pn.Column(hv.Overlay(pedHists).opts(shared_axes=False))
+    gspecH[4:7, 0:8] = pn.Column(hv.Overlay(noiseHists).opts(shared_axes=False))
     if diffHists is not None:
-        gspecH[7:10, 0:8] = pn.Column(hv.Overlay(diffHists))
+        gspecH[7:10, 0:8] = pn.Column(hv.Overlay(diffHists).opts(shared_axes=False))
     if tabs is None:
         tabs = pn.Tabs(gspecH)
         # this is for debugging.....

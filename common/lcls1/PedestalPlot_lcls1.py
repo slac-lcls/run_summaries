@@ -87,8 +87,7 @@ SIT_PSDM_DATA = Path(os.environ.get("SIT_PSDM_DATA"))
 ####
 
 def statusStats(det_name, printme=False, request_run=None):
-    print(det_name)
-    print(run)
+    #print(f"stats for {det_name} for{run}")
     status_type = "camera"  # see if different detector types here are different?
     if isinstance(run, int):
         det = psana.Detector(det_name)
@@ -123,9 +122,9 @@ def statusStats(det_name, printme=False, request_run=None):
             status_type = "jungfrau"
         elif det.calibconst['pedestals'][1]['dettype']=='epix100':
             status_type = "epix100"
-        #this is not how to get status or mask...
-        print(statusmask)
-        print(status)    
+        ##this is not how to get status or mask...
+        #print(statusmask)
+        #print(status)    
             
     status_unp = np.array(
         [
@@ -148,7 +147,7 @@ def statusStats(det_name, printme=False, request_run=None):
         statusmask.flatten().shape[0] - statusmask.sum()
     )
     if status_type in gainSwitching:
-        print(status.shape)
+        #print(status.shape)
         for icycle in range(status.shape[0]):
             statusStatDict["cycle%i" % icycle] = int((status[icycle] > 0).sum())
 
@@ -252,7 +251,7 @@ def plotDataImgs(expname, run, det_name, nCycles, plotInfo=None):
         "# Pedestal data - subtracted - Run %04d" % run
     )
 
-    print(expname, run, det_name)
+    #print(expname, run, det_name)
     for i in range(min(5, nCycles)):
         common_mode = None
         if det_name.find("Epix") >= 0:
@@ -261,7 +260,7 @@ def plotDataImgs(expname, run, det_name, nCycles, plotInfo=None):
 
         retp = anaps.plotAvImage(returnIt=True, plotWith=None)
         imageDim = hv.Dimension(
-            ("ped_subtr", "in keV"),
+            ("ped_subtr_%s"%(det_name), "in keV"),
             range=(np.nanpercentile(retp, 0.1), np.nanpercentile(retp, 99.9)),
         )
         if plotInfo is not None:
@@ -305,8 +304,8 @@ def allPlots(
     noise = det.rms(run)
     runnum = run
     
-    xDim = hv.Dimension(("x", "x in micron"))
-    yDim = hv.Dimension(("y", "y in micron"))
+    xDim = hv.Dimension(("x_%s"%(det_name), "x in micron"))
+    yDim = hv.Dimension(("y_%s"%(det_name), "y in micron"))
     try:
         xcoords, ycoords = det.coords_xy(run)
         xrange = (np.nanmin(xcoords), np.nanmax(xcoords))
@@ -320,8 +319,8 @@ def allPlots(
             ymax = noise[0].shape[1]
         xrange = (0, xmax)
         yrange = (0, ymax)
-        xDim = hv.Dimension(("x", "x in pixel"))
-        yDim = hv.Dimension(("y", "y in pixel"))
+        xDim = hv.Dimension(("x_%s"%(det_name), "x in pixel"))
+        yDim = hv.Dimension(("y_%s"%(det_name), "y in pixel"))
 
     plotInfo = [xrange, yrange, xDim, yDim]
 
@@ -346,14 +345,15 @@ def allPlots(
     pedHists, noiseHists, diffHists = ped_rms_histograms(
         nCycles, peds, noise, diffPeds, det_name
     )
+        
     gspecH = pn.GridSpec(
         sizing_mode="stretch_width", max_width=500, name="Histogram - %s" % det_name
     )
     gspecH[0, 0:8] = pn.Row("# Pedestals&RMS Histograms - Run %04d" % (runnum))
-    gspecH[1:4, 0:8] = pn.Column(hv.Overlay(pedHists))
-    gspecH[4:7, 0:8] = pn.Column(hv.Overlay(noiseHists))
+    gspecH[1:4, 0:8] = pn.Column(hv.Overlay(pedHists).opts(shared_axes=False))
+    gspecH[4:7, 0:8] = pn.Column(hv.Overlay(noiseHists).opts(shared_axes=False))
     if diffHists is not None:
-        gspecH[7:10, 0:8] = pn.Column(hv.Overlay(diffHists))
+        gspecH[7:10, 0:8] = pn.Column(hv.Overlay(diffHists).opts(shared_axes=False))
     if tabs is None:
         tabs = pn.Tabs(gspecH)
         # this is for debugging.....
@@ -460,11 +460,10 @@ def plotPedestals(
             tabs=tabs,
             detImgMaxSize=detImgMaxSize,
         )
-        print(this_det_name)
         statusDict = statusStats(this_det_name, run)
         for k, v in statusDict.items():
             runTableData[f"Pixel Status/{this_det_name}_n_{k}"] = v
-        print("runTableData:")
+        print(f"runTableData for {this_det_name}")
         print(runTableData)
 
     postBadPixMsg(detectors=sorted(det_names, reverse=True), exp=expname, run=run)

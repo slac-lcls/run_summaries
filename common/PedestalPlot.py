@@ -132,12 +132,12 @@ def ped_rms_histograms(nCycles, peds, noise, diff, alias=""):
     pedBins = np.linspace(min5Ped, max95Ped, 200)
     pedHistograms = []
     pedBinDim = hv.Dimension(
-        ("ped_bin%s" % alias, "pedestal in ADU"), range=(min5Ped, max95Ped)
+        ("ped_bin_%s" % alias, "pedestal in ADU"), range=(min5Ped, max95Ped)
     )
     noiseBins = np.linspace(0, max95Noise, 200)
     noiseHistograms = []
     noiseBinDim = hv.Dimension(
-        ("rms_bin%s" % alias, "noise in ADU"), range=(0, max95Noise)
+        ("rms_bin_%s" % alias, "noise in ADU"), range=(0, max95Noise)
     )
 
     noiseMax = 0
@@ -159,9 +159,9 @@ def ped_rms_histograms(nCycles, peds, noise, diff, alias=""):
     pedMax *= 1.1
     noiseMax *= 1.1
     evtsPDim = hv.Dimension(
-        ("evtsP%s" % alias, "N pixels / pedestal"), range=(0, pedMax)
+        ("evtsP_%s" % alias, "N pixels / pedestal"), range=(0, pedMax)
     )
-    evtsDim = hv.Dimension(("evtsN%s" % alias, "N pixels / noise"), range=(0, noiseMax))
+    evtsDim = hv.Dimension(("evtsN_%s" % alias, "N pixels / noise"), range=(0, noiseMax))
 
     pedHists = []
     noiseHists = []
@@ -214,7 +214,7 @@ def ped_rms_histograms(nCycles, peds, noise, diff, alias=""):
     diffBins = np.linspace(min5Diff, max95Diff, 200)
     diffHistograms = []
     diffBinDim = hv.Dimension(
-        ("diff_bin%s" % alias, "diff in ADU"), range=(min5Diff, max95Diff)
+        ("diff_bin_%s" % alias, "diff in ADU"), range=(min5Diff, max95Diff)
     )
 
     diffMax = 0
@@ -228,7 +228,7 @@ def ped_rms_histograms(nCycles, peds, noise, diff, alias=""):
         if diffMax < np.nanmax(diffHistograms[-1][0]):
             diffMax = np.nanmax(diffHistograms[-1][0])
     diffMax *= 1.1
-    evtsDDim = hv.Dimension(("evtsD%s" % alias, "N pixels / diff"), range=(0, diffMax))
+    evtsDDim = hv.Dimension(("evtsD_%s" % alias, "N pixels / diff"), range=(0, diffMax))
 
     diffHists = []
     i = 0
@@ -402,7 +402,7 @@ def plotDataImgs(expname, run, det_name, nCycles, plotInfo=None):
         "# Pedestal data - subtracted - Run %04d" % run
     )
 
-    print(expname, run, det_name)
+    #print(expname, run, det_name)
     for i in range(min(5, nCycles)):
         common_mode = None
         if det_name.find("Epix") >= 0:
