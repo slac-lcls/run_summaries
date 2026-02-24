@@ -137,6 +137,7 @@ if args.sum or args.sumavg:
                 ).todense())
             #do not divide here - the sum is more physically appropriate
             #data = img/detinfo['piximg']
+            data = img
         data = data/nEvts
 
         im = Image.fromarray(data)
@@ -167,7 +168,7 @@ if args.events != "":
                 print('Making tiff files for ',detname,' original shape: ',shp)
                 for evt in range(maxevents):
                     data = getattr(det_data,d).read(evt,evt+1).squeeze()
-                    if len(data.shape)>2:                        
+                    if len(data.shape)>2:
                         img = np.asarray(
                             sparse.coo_matrix(
                                 (data.flatten(),
@@ -176,6 +177,7 @@ if args.events != "":
                             ).todense())
                         #do not divide here - the sum is more physically appropriate
                         #data = img/detinfo['piximg']
+                        data = img
                         
                     im = Image.fromarray(data)
                     tiff_file = f"{tiffdirname}/Run_{int(run)}_evt_{evt+1}_{detname}.tiff"
