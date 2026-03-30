@@ -27,38 +27,37 @@ POSITIONAL=()
 EXP=$EXPERIMENT
 while [[ $# -gt 0 ]]
 do
-        key="$1"
-
-	case $key in
-		-h|--help)
-			usage
-			exit
-			;;
-		-q|--queue)
-			QUEUE="$2"
-			shift
-			shift
-			;;
+    key="$1"
+    case $key in
+	-h|--help)
+	    usage
+	    exit
+	    ;;
+	-q|--queue)
+	    QUEUE="$2"
+	    shift
+	    shift
+	    ;;
         -r|--run)
             POSITIONAL+=("--run $2")
             RUN=$2
             shift
             shift
             ;;
-		-e|--experiment)
+	-e|--experiment)
             POSITIONAL+=("--experiment $2")
             EXP=$2
-			shift
-			shift
-			;;
-		-i|--interactive)
-			INTERACTIVE=true
-			shift
-			;;
+	    shift
+	    shift
+	    ;;
+	-i|--interactive)
+	    INTERACTIVE=true
+	    shift
+	    ;;
         *)
             POSITIONAL+=("$1")
-			shift
-			;;                     
+	    shift
+	    ;;                     
 	esac
 done
 set -- "${POSITIONAL[@]}"
@@ -73,9 +72,8 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 RUN="${RUN_NUM:=$RUN}" # default to the environment variable if submitted from the elog
 EXP="${EXPERIMENT:=$EXP}" # default to the environment variable if submitted from the elog
-HUTCH=${EXP:0:3}
-LCLS2_HUTCHES="rix, tmo, ued, mfx"
-if echo $LCLS2_HUTCHES | grep -iw $HUTCH > /dev/null; then
+DAQ=$(get_info --daq --setExp "$EXP")
+if [[ $DAQ == 'LCLS2' ]]; then
     echo "This is a LCLS-II experiment"
     source $SIT_ENV_DIR/sw/conda2/manage/bin/psconda.sh
     ABS_PATH=`echo $MYDIR | sed  s#arp_scripts#common/lcls2#g`
