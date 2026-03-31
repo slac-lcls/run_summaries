@@ -390,8 +390,11 @@ def plotPedestals(
         print("runTableData:")
         print(runTableData)
 
-    postBadPixMsg(detectors=sorted(det_names, reverse=True), exp=expname, run=run)
-
+    try:
+        postBadPixMsg(detectors=sorted(det_names, reverse=True), exp=expname, run=run)
+    except:
+        print("Issues posting the bad pixel Msg for ", expname, run, det_names)
+        
     if not nosave_elog:
         elogDir = (
             Path(SIT_PSDM_DATA)
