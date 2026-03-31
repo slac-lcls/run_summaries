@@ -72,6 +72,8 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 RUN="${RUN_NUM:=$RUN}" # default to the environment variable if submitted from the elog
 EXP="${EXPERIMENT:=$EXP}" # default to the environment variable if submitted from the elog
+HUTCH=${EXP:0:3}
+PATH=$PATH:/sdf/group/lcls/ds/tools/engineering_tools/"$HUTCH"/scripts/
 DAQ=$(get_info --daq --setExp "$EXP")
 if [[ $DAQ == 'LCLS2' ]]; then
     echo "This is a LCLS-II experiment"
